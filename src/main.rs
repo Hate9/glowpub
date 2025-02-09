@@ -79,6 +79,7 @@ struct CliOptions {
 
     /// Output files in this directory (e.g. `--output-dir=~/glowfic`).
     /// Note that this can flood the directory if used with `board` but without `--single-file`.
+    /// Files will be placed in format-specific subdirectories if `--output-format` is `both` (the default).
     #[clap(long)]
     output_dir: Option<PathBuf>,
 
@@ -101,6 +102,7 @@ enum FlattenDetails {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, clap::ValueEnum)]
 enum OutputFormat {
     /// The default option. Both HTML and Epub files will be created.
+    /// Output files will be placed in "html" and "epub" subdirectories, respectively.
     #[default]
     Both,
     /// Only Epub files will be created.
@@ -138,6 +140,15 @@ async fn main() {
     } = command.options();
 
     let resize_icons = resize_icons.map(|r| r.unwrap_or(100));
+
+    let html_output_prefix;
+    let epub_output_prefix;
+    (html_output_prefix, epub_output_prefix) =
+        if matches!(output_format, OutputFormat::Both) || output_dir.is_none() {
+            ("html/", "epub/")
+        } else {
+            ("", "")
+        };
 
     let output_dir = output_dir.unwrap_or_else(|| PathBuf::from(DEFAULT_OUTPUT_DIR));
 
@@ -194,7 +205,8 @@ async fn main() {
                 || matches!(output_format, OutputFormat::Both)
             {
                 log::info!("Generating html document {name}...");
-                let path = output_dir.join(PathBuf::from(format!("html/{name}.html")));
+                let path =
+                    output_dir.join(PathBuf::from(format!("{html_output_prefix}{name}.html")));
                 write(path, thread.to_single_html_page(html_options));
             }
 
@@ -202,7 +214,8 @@ async fn main() {
                 || matches!(output_format, OutputFormat::Both)
             {
                 log::info!("Generating epub document {name}...");
-                let path = output_dir.join(PathBuf::from(format!("epub/{name}.epub")));
+                let path =
+                    output_dir.join(PathBuf::from(format!("{epub_output_prefix}{name}.epub")));
                 write(path, thread.to_epub(epub_options).await.unwrap());
             }
         }
@@ -235,7 +248,8 @@ async fn main() {
                     || matches!(output_format, OutputFormat::Both)
                 {
                     log::info!("Generating html document {name}...");
-                    let path = output_dir.join(PathBuf::from(format!("html/{name}.html")));
+                    let path =
+                        output_dir.join(PathBuf::from(format!("{html_output_prefix}{name}.html")));
                     write(path, thread.to_single_html_page(html_options));
                 }
 
@@ -243,7 +257,8 @@ async fn main() {
                     || matches!(output_format, OutputFormat::Both)
                 {
                     log::info!("Generating epub document {name}...");
-                    let path = output_dir.join(PathBuf::from(format!("epub/{name}.epub")));
+                    let path =
+                        output_dir.join(PathBuf::from(format!("{epub_output_prefix}{name}.epub")));
                     write(path, thread.to_epub(epub_options).await.unwrap());
                 }
             }
@@ -281,7 +296,8 @@ async fn main() {
                     };
 
                     log::info!("Generating epub document {name}...");
-                    let path = output_dir.join(PathBuf::from(format!("epub/{name}.epub")));
+                    let path =
+                        output_dir.join(PathBuf::from(format!("{epub_output_prefix}{name}.epub")));
                     write(path, continuity.to_epub(epub_options).await.unwrap());
                 }
             }

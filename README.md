@@ -46,6 +46,7 @@ cargo run -- board 215
   Note that this can flood the directory if used with `board` but without `--single-file`.
 - `--output-format`: output files in a specific format (or `none` for a dry run).
   Valid values are `--output-format=epub`, `--output-format=html`, `--output-format=both` (default), and `--output-format=none`.
+  Output file will be placed in format-specific subdirectories (e.g. `epub/` or `html/`) if `--output-format` is `both` or if `--output-dir` is unspecified.
 - `--single-file`: if downloading a board/continuity, output the entire board in a single epub file. Does not work with `--output-format=html`.
 
 ---
