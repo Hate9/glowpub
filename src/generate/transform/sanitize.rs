@@ -238,15 +238,14 @@ mod style {
             let value = property
                 .to_css_string(false, PrinterOptions::default())
                 .unwrap();
-            let value = value
+            value
                 .strip_prefix(&vendor_prefix)
                 .unwrap()
                 .strip_prefix(&name)
                 .unwrap()
                 .strip_prefix(": ")
                 .unwrap()
-                .to_owned();
-            value
+                .to_owned()
         };
         (vendor_prefix, name, value)
     }
