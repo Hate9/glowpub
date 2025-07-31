@@ -7,8 +7,8 @@ pub mod transform;
 use std::collections::HashMap;
 
 use crate::{
-    types::{BoardInPost, Character, Icon, User},
     Post, Reply,
+    types::{BoardInPost, Character, Icon, User},
 };
 
 use super::Thread;

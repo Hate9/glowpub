@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 
 use lol_html::{
-    html_content::ContentType, rewrite_str, ElementContentHandlers, RewriteStrSettings,
+    ElementContentHandlers, RewriteStrSettings, html_content::ContentType, rewrite_str,
 };
 
 pub fn flatten_details(content: &str) -> String {

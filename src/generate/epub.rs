@@ -9,12 +9,12 @@ use rand::{Rng, SeedableRng};
 use uuid::Uuid;
 
 use crate::{
-    types::{Continuity, Section, User},
     Board, Post, Reply, Thread,
+    types::{Continuity, Section, User},
 };
 
 use super::{
-    author_names, raw_content_page, raw_copyright_page, raw_title_page, transform, Options, STYLE,
+    Options, STYLE, author_names, raw_content_page, raw_copyright_page, raw_title_page, transform,
 };
 
 impl Continuity {
@@ -206,7 +206,7 @@ impl Continuity {
                 .to_be_bytes(),
         ];
         let seed: Vec<_> = seed.iter().flatten().copied().collect();
-        let uuid = rand::rngs::StdRng::from_seed(seed.try_into().unwrap()).gen();
+        let uuid = rand::rngs::StdRng::from_seed(seed.try_into().unwrap()).r#gen();
         Uuid::from_u128(uuid)
     }
 }
@@ -511,7 +511,7 @@ impl Thread {
             self.post.tagged_at.timestamp().to_be_bytes(),
         ];
         let seed: Vec<_> = seed.iter().flatten().copied().collect();
-        let uuid = rand::rngs::StdRng::from_seed(seed.try_into().unwrap()).gen();
+        let uuid = rand::rngs::StdRng::from_seed(seed.try_into().unwrap()).r#gen();
         Uuid::from_u128(uuid)
     }
 }

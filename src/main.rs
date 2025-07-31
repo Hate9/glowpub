@@ -5,11 +5,11 @@ use std::{
 };
 
 use glowpub::{
+    Board, Thread,
     api::BoardPosts,
     cached::write_if_changed,
-    gen::Options,
+    generate::Options,
     types::{Continuity, Section},
-    Board, Thread,
 };
 
 const DEFAULT_OUTPUT_DIR: &str = "./books";

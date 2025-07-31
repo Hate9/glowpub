@@ -108,7 +108,9 @@ mod style {
         }
 
         let new_value = serialize_declaration_block(&new);
-        log::info!("Removing unrecognised or forbidden properties from style attribute: \nstyle=\"{value}\"\n-> style=\"{new_value}\"");
+        log::info!(
+            "Removing unrecognised or forbidden properties from style attribute: \nstyle=\"{value}\"\n-> style=\"{new_value}\""
+        );
         if new_value.is_empty() {
             None
         } else {
@@ -236,15 +238,14 @@ mod style {
             let value = property
                 .to_css_string(false, PrinterOptions::default())
                 .unwrap();
-            let value = value
+            value
                 .strip_prefix(&vendor_prefix)
                 .unwrap()
                 .strip_prefix(&name)
                 .unwrap()
                 .strip_prefix(": ")
                 .unwrap()
-                .to_owned();
-            value
+                .to_owned()
         };
         (vendor_prefix, name, value)
     }

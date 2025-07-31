@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use super::{
-    raw_content_page, raw_copyright_page, raw_title_page, transform, Options, Thread, STYLE,
+    Options, STYLE, Thread, raw_content_page, raw_copyright_page, raw_title_page, transform,
 };
 
 impl Thread {
