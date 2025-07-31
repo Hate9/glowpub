@@ -162,14 +162,14 @@ where
     .await?;
 
     if parsed.is_permission_error() && Token::try_global().is_none() {
-        if let Ok(Ok(Ok(Token { token }))) = Token::global_or_prompt().await {
+        match Token::global_or_prompt().await { Ok(Ok(Ok(Token { token }))) => {
             let response = retry(5, || http_client().get(url).bearer_auth(&token).send()).await?;
             let parsed: GlowficResponse<T> = response.json().await?;
 
             Ok(parsed.into_result())
-        } else {
+        } _ => {
             Ok(parsed.into_result())
-        }
+        }}
     } else {
         Ok(parsed.into_result())
     }

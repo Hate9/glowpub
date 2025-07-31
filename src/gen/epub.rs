@@ -206,7 +206,7 @@ impl Continuity {
                 .to_be_bytes(),
         ];
         let seed: Vec<_> = seed.iter().flatten().copied().collect();
-        let uuid = rand::rngs::StdRng::from_seed(seed.try_into().unwrap()).gen();
+        let uuid = rand::rngs::StdRng::from_seed(seed.try_into().unwrap()).r#gen();
         Uuid::from_u128(uuid)
     }
 }
@@ -511,7 +511,7 @@ impl Thread {
             self.post.tagged_at.timestamp().to_be_bytes(),
         ];
         let seed: Vec<_> = seed.iter().flatten().copied().collect();
-        let uuid = rand::rngs::StdRng::from_seed(seed.try_into().unwrap()).gen();
+        let uuid = rand::rngs::StdRng::from_seed(seed.try_into().unwrap()).r#gen();
         Uuid::from_u128(uuid)
     }
 }

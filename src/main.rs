@@ -7,7 +7,7 @@ use std::{
 use glowpub::{
     api::BoardPosts,
     cached::write_if_changed,
-    gen::Options,
+    r#gen::Options,
     types::{Continuity, Section},
     Board, Thread,
 };
