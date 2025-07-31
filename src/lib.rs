@@ -4,7 +4,7 @@ mod auth;
 
 pub mod api;
 pub mod cached;
-pub mod r#gen;
+pub mod generate;
 pub mod intern_images;
 pub mod types;
 pub mod utils;
