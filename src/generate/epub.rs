@@ -9,12 +9,12 @@ use rand::{Rng, SeedableRng};
 use uuid::Uuid;
 
 use crate::{
-    types::{Continuity, Section, User},
     Board, Post, Reply, Thread,
+    types::{Continuity, Section, User},
 };
 
 use super::{
-    author_names, raw_content_page, raw_copyright_page, raw_title_page, transform, Options, STYLE,
+    Options, STYLE, author_names, raw_content_page, raw_copyright_page, raw_title_page, transform,
 };
 
 impl Continuity {

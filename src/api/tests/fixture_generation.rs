@@ -1,9 +1,9 @@
 use std::{ops::Range, time::Duration};
 
-use rand::{distributions::Uniform, Rng};
+use rand::{Rng, distributions::Uniform};
 use serde_json::Value;
 
-use crate::{utils::http_client, Board, Post};
+use crate::{Board, Post, utils::http_client};
 
 use super::super::{BoardPosts, Replies};
 
@@ -115,9 +115,11 @@ pub fn is_error(response: &Value) -> bool {
             panic!("{response:?}")
         }
         Value::Array(array) => {
-            assert!(array
-                .iter()
-                .all(|v| !v.as_object().unwrap().contains_key("errors")));
+            assert!(
+                array
+                    .iter()
+                    .all(|v| !v.as_object().unwrap().contains_key("errors"))
+            );
 
             false
         }

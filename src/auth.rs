@@ -9,8 +9,8 @@ impl Token {
     pub fn try_global() -> Option<Self> {
         TOKEN.get().cloned()
     }
-    pub async fn global_or_prompt(
-    ) -> io::Result<Result<Result<Self, Vec<GlowficError>>, reqwest::Error>> {
+    pub async fn global_or_prompt()
+    -> io::Result<Result<Result<Self, Vec<GlowficError>>, reqwest::Error>> {
         if let Some(token) = Self::try_global() {
             return Ok(Ok(Ok(token)));
         }

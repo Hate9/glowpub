@@ -4,12 +4,12 @@ mod tests;
 use std::{future::Future, time::Duration};
 
 use chrono::{DateTime, Utc};
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 use crate::{
-    types::{BoardInPost, Section, Token, User},
-    utils::{http_client, AnyMap},
     Board, Post, Reply,
+    types::{BoardInPost, Section, Token, User},
+    utils::{AnyMap, http_client},
 };
 
 const GLOWFIC_API_V1: &str = "https://www.glowfic.com/api/v1";

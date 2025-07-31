@@ -3,7 +3,7 @@ mod fixture_generation;
 use serde::{Deserialize, Serialize};
 use std::fs::read_to_string;
 
-use crate::{api::BoardPosts, Board, Post};
+use crate::{Board, Post, api::BoardPosts};
 
 use super::{GlowficError, GlowficResponse, Replies};
 

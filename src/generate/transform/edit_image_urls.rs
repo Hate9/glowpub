@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use lol_html::{rewrite_str, ElementContentHandlers, RewriteStrSettings};
+use lol_html::{ElementContentHandlers, RewriteStrSettings, rewrite_str};
 
 pub fn edit_image_urls(content: &str, mut f: impl FnMut(String) -> String) -> String {
     rewrite_str(

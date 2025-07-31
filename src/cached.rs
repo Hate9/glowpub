@@ -7,15 +7,15 @@ use std::{
 
 use mime::Mime;
 use reqwest::header::CONTENT_TYPE;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::{
+    Board, Post, Reply,
     api::{BoardPosts, GlowficError, PostInBoard, Replies},
     types::{Continuity, Icon, Thread},
     utils::{
         extension_to_image_mime, guess_image_mime, http_client, mime_to_image_extension, url_hash,
     },
-    Board, Post, Reply,
 };
 
 const CACHE_ROOT: &str = "./cache";
@@ -314,7 +314,9 @@ fn read_image_file(path: PathBuf) -> Result<(Mime, Vec<u8>), Box<dyn Error>> {
                 }
             }
 
-            Err(format!("Found multiple files for image ({path:?}). Cleaning them up. No further action needed."))?
+            Err(format!(
+                "Found multiple files for image ({path:?}). Cleaning them up. No further action needed."
+            ))?
         }
 
         _ => Err("Did not find a match for image in the cache.")?,
