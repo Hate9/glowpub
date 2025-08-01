@@ -7,90 +7,88 @@ use crate::{Board, Post, utils::http_client};
 
 use super::super::{BoardPosts, Replies};
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
-
 #[tokio::test]
 #[ignore]
-async fn gen_boards_file() -> Result<()> {
+async fn gen_boards_file() {
     let urls: Vec<String> = iter_rng(0..4_000).take(100).map(Board::url).collect();
 
-    let responses: Vec<Value> = to_responses(&urls).await?;
+    let responses: Vec<Value> = to_responses(&urls).await;
 
-    save_to_file(&responses, "boards")?;
-
-    Ok(())
+    save_to_file(&responses, "boards");
 }
 
 #[tokio::test]
 #[ignore]
-async fn gen_posts_file() -> Result<()> {
+async fn gen_posts_file() {
     let urls: Vec<String> = iter_rng(0..4_000).take(100).map(Post::url).collect();
 
-    let responses: Vec<Value> = to_responses(&urls).await?;
+    let responses: Vec<Value> = to_responses(&urls).await;
 
-    save_to_file(&responses, "posts")?;
-
-    Ok(())
+    save_to_file(&responses, "posts");
 }
 
 #[tokio::test]
 #[ignore]
-async fn gen_replies_file() -> Result<()> {
+async fn gen_replies_file() {
     let urls: Vec<String> = iter_rng(0..4_000)
         .take(50)
         .flat_map(|id| (0..5).map(|page| (id, page)).collect::<Vec<_>>())
         .map(|(id, page)| Replies::page_url(id, page))
         .collect();
 
-    let responses: Vec<Value> = to_responses(&urls).await?;
+    let responses: Vec<Value> = to_responses(&urls).await;
 
-    save_to_file(&responses, "replies")?;
-
-    Ok(())
+    save_to_file(&responses, "replies");
 }
 
 #[tokio::test]
 #[ignore]
-async fn gen_board_posts_file() -> Result<()> {
+async fn gen_board_posts_file() {
     let urls: Vec<String> = iter_rng(0..500)
         .take(50)
         .flat_map(|id| (0..5).map(|page| (id, page)).collect::<Vec<_>>())
         .map(|(id, page)| BoardPosts::page_url(id, page))
         .collect();
 
-    let responses: Vec<Value> = to_responses(&urls).await?;
+    let responses: Vec<Value> = to_responses(&urls).await;
 
-    save_to_file(&responses, "board_posts")?;
-
-    Ok(())
+    save_to_file(&responses, "board_posts");
 }
 
-pub async fn to_responses(urls: &[String]) -> Result<Vec<Value>> {
+pub async fn to_responses(urls: &[String]) -> Vec<Value> {
     let mut responses: Vec<Value> = vec![];
 
     for url in urls {
-        responses.push(http_client().get(url).send().await?.json().await?);
-
-        tokio::time::sleep(Duration::from_millis(100)).await;
+        responses.push(loop {
+            let response = http_client().get(url).send().await.unwrap();
+            if !response.status().is_success() {
+                println!("{:?} {}", response.status(), response.text().await.unwrap());
+                tokio::time::sleep(Duration::from_secs(2 * 60)).await;
+                continue;
+            }
+            break response.json().await.unwrap();
+        });
     }
 
-    Ok(responses)
+    responses
 }
 
-pub fn save_to_file(responses: &[Value], name: &str) -> Result<()> {
+pub fn save_to_file(responses: &[Value], name: &str) {
     std::fs::write(
         format!("./src/api/tests/fixtures/api-{name}.json"),
-        serde_json::to_string(responses)?,
-    )?;
+        serde_json::to_string(responses).unwrap(),
+    )
+    .unwrap();
     std::fs::write(
         format!("./src/api/tests/fixtures/api-{name}-success.json"),
-        serde_json::to_string(&only_successes(responses))?,
-    )?;
+        serde_json::to_string(&only_successes(responses)).unwrap(),
+    )
+    .unwrap();
     std::fs::write(
         format!("./src/api/tests/fixtures/api-{name}-error.json"),
-        serde_json::to_string(&only_errors(responses))?,
-    )?;
-    Ok(())
+        serde_json::to_string(&only_errors(responses)).unwrap(),
+    )
+    .unwrap();
 }
 
 pub fn only_successes(responses: &[Value]) -> Vec<Value> {

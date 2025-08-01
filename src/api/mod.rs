@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-use std::{future::Future, time::Duration};
+use std::{fmt, future::Future, time::Duration};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
@@ -12,7 +12,9 @@ use crate::{
     utils::{AnyMap, http_client},
 };
 
-const GLOWFIC_API_V1: &str = "https://www.glowfic.com/api/v1";
+const RETRIES: u32 = 10;
+const MAX_DELAY: Duration = Duration::from_secs(5 * 60);
+pub const GLOWFIC_API_V1: &str = "https://www.glowfic.com/api/v1";
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -148,7 +150,7 @@ pub(crate) async fn get_glowfic<T>(
 where
     T: DeserializeOwned,
 {
-    let parsed: GlowficResponse<T> = retry(5, || {
+    let parsed: GlowficResponse<T> = retry(RETRIES, || async {
         http_client()
             .get(url)
             .any_map(|request| match Token::try_global() {
@@ -156,15 +158,26 @@ where
                 None => request,
             })
             .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await
     })
-    .await?
-    .json()
     .await?;
 
     if parsed.is_permission_error() && Token::try_global().is_none() {
         if let Ok(Ok(Ok(Token { token }))) = Token::global_or_prompt().await {
-            let response = retry(5, || http_client().get(url).bearer_auth(&token).send()).await?;
-            let parsed: GlowficResponse<T> = response.json().await?;
+            let parsed: GlowficResponse<T> = retry(RETRIES, || async {
+                http_client()
+                    .get(url)
+                    .bearer_auth(&token)
+                    .send()
+                    .await?
+                    .error_for_status()?
+                    .json()
+                    .await
+            })
+            .await?;
 
             Ok(parsed.into_result())
         } else {
@@ -230,18 +243,24 @@ impl Token {
 ///
 /// If it fails it'll retry up to the provided number of times, for a total of retries+1 attempts.
 ///
-/// Uses an exponential backoff of (1, 10, 100, ...) milliseconds.
-pub async fn retry<T, E, Fut: Future<Output = Result<T, E>>>(
-    retries: u64,
-    mut f: impl FnMut() -> Fut,
-) -> Result<T, E> {
-    for i in 0..(retries + 1) {
+/// Uses a capped exponential backoff of (1, 10, 100, ...) milliseconds.
+async fn retry<T, E, Fut>(retries: u32, mut f: impl FnMut() -> Fut) -> Result<T, E>
+where
+    E: fmt::Debug,
+    Fut: Future<Output = Result<T, E>>,
+{
+    for i in 0..=retries {
         match f().await {
             Ok(ok) => return Ok(ok),
             Err(e) if i == retries => return Err(e),
-            Err(_) => {}
+            Err(e) => {
+                let delay = Ord::min(Duration::from_millis(20u64.pow(i + 1)), MAX_DELAY);
+                if delay > Duration::from_secs(1) || i + 1 == retries {
+                    log::info!("Api error, retrying in {delay:?}. {e:?}");
+                }
+                tokio::time::sleep(delay).await;
+            }
         }
-        tokio::time::sleep(Duration::from_millis(10 ^ i)).await;
     }
     unreachable!()
 }
