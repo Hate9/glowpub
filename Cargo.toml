@@ -8,42 +8,53 @@ repository = "https://github.com/QuartzLibrary/glowpub"
 readme = "README.md"
 edition = "2024"
 
+[features]
+default = ["binary"]
+binary = ["epub", "auth", "dep:clap", "dep:simple_logger", "dep:slug"]
+auth = ["api", "dep:rpassword", "dep:log"]
+epub = ["gen", "api", "dep:epub-builder", "dep:uuid"]
+api = ["types", "utils", "dep:serde_json", "dep:tokio", "dep:glob", "dep:log", "dep:rand"]
+gen = ["types", "utils", "dep:fontdb", "dep:resvg", "dep:textwrap", "dep:tiny-skia", "dep:usvg", "dep:ammonia", "dep:cssparser", "dep:html-escape", "dep:html5ever", "dep:lightningcss", "dep:lol_html", "dep:markup5ever", "dep:markup5ever_rcdom", "dep:xml5ever", "dep:log", "dep:rand"]
+types = ["dep:chrono", "dep:serde"]
+utils = ["dep:sha2", "dep:image", "dep:mime", "dep:reqwest"]
+
 [dependencies]
-chrono = { version = "0.4", features = ["serde"] }
-glob = "0.3"
-log = "0.4"
-mime = "0.3"
-rand = "0.8"
-regex = "1"
-sha2 = "0.10"
-uuid = { version = "1", features = ["v4"] }
+log = { version = "0.4", optional = true }
+rand = { version = "0.8", optional = true }
 
-reqwest = { version = "0.12", features = ["json"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-tokio = { version = "1", features = ["full"] }
+chrono = { version = "0.4", features = ["serde"], optional = true }
+serde = { version = "1", features = ["derive"], optional = true }
 
-fontdb = "0.16"
-resvg = "0.41"
-textwrap = "0.16"
-tiny-skia = "0.11"
-usvg = "0.41"
+mime = { version = "0.3", optional = true }
+sha2 = { version = "0.10", optional = true }
+reqwest = { version = "0.12", features = ["json"], optional = true }
+image = { version = "0.25", default-features = false, features = ["bmp", "gif", "jpeg", "png", "webp"], optional = true }
 
-epub-builder = { version = "0.7", default-features = false, features = ["libzip"] }
+serde_json = { version ="1", optional = true }
+tokio = { version = "1", features = ["full"], optional = true }
+glob = { version = "0.3", optional = true }
 
-ammonia = "4"
-cssparser = "0.33"
-html-escape = "0.2"
-html5ever = "0.27"
-lightningcss = "1.0.0-alpha.55"
-lol_html = "1"
-markup5ever = "0.12"
-markup5ever_rcdom = "0.3"
-xml5ever = "0.18"
+fontdb = { version = "0.16", optional = true }
+resvg = { version = "0.41", optional = true }
+textwrap = { version = "0.16", optional = true }
+tiny-skia = { version = "0.11", optional = true }
+usvg = { version = "0.41", optional = true }
 
-image = { version = "0.25", default-features = false, features = ["bmp", "gif", "jpeg", "png", "webp"] }
+ammonia = { version = "4", optional = true }
+cssparser = { version = "0.33", optional = true }
+html-escape = { version = "0.2", optional = true }
+html5ever = { version = "0.27", optional = true }
+lightningcss = { version = "1.0.0-alpha.55", optional = true }
+lol_html = { version = "1", optional = true }
+markup5ever = { version = "0.12", optional = true }
+markup5ever_rcdom = { version = "0.3", optional = true }
+xml5ever = { version = "0.18", optional = true }
 
-clap = { version = "4", features = ["derive"] }
-simple_logger = "4"
-slug = "0.1"
-rpassword = "7.3.1"
+epub-builder = { version = "0.7", default-features = false, features = ["libzip"], optional = true }
+uuid = { version = "1", features = ["v4"], optional = true }
+
+rpassword = { version = "7.3.1", optional = true }
+
+clap = { version = "4", features = ["derive"], optional = true }
+simple_logger = { version = "4", optional = true }
+slug = { version = "0.1", optional = true }

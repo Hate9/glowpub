@@ -162,6 +162,7 @@ impl Thread {
 
         Ok(Ok(Self { post, replies }))
     }
+    #[cfg(feature = "gen")]
     pub async fn cache_all_icons(&self, invalidate_cache: bool) {
         let icons: BTreeSet<_> = self.icons().collect();
 
@@ -205,6 +206,8 @@ impl Continuity {
 
         Ok(Ok(Self { board, threads }))
     }
+
+    #[cfg(feature = "gen")]
     pub async fn cache_all_icons(&self, invalidate_cache: bool) {
         let icons: BTreeSet<_> = self.threads.iter().flat_map(|t| t.icons()).collect();
         for icon in icons {

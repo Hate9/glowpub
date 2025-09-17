@@ -109,6 +109,7 @@ mod helpers {
         iter,
     };
 
+    #[cfg(feature = "gen")]
     use crate::generate::transform;
 
     use super::*;
@@ -156,6 +157,7 @@ mod helpers {
             (sections, sectionless_threads)
         }
     }
+    #[cfg(feature = "gen")]
     impl Thread {
         pub fn image_urls(&self) -> HashSet<String> {
             let contents = iter::once(&self.post.content)
