@@ -4,12 +4,10 @@ use image::ImageReader;
 use mime::Mime;
 use sha2::{Digest, Sha256};
 
-#[cfg(feature = "types")]
 use crate::types::{Icon, Thread};
 
 const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
 
-#[cfg(feature = "types")]
 impl Thread {
     pub fn icons(&self) -> impl Iterator<Item = &Icon> {
         std::iter::once(self.post.icon.as_ref())

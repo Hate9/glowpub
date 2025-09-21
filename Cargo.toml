@@ -10,29 +10,25 @@ edition = "2024"
 
 [features]
 default = ["binary"]
-binary = ["epub", "auth", "dep:clap", "dep:simple_logger", "dep:slug"]
-auth = ["api", "dep:rpassword", "dep:log"]
+binary = ["epub", "dep:clap", "dep:simple_logger", "dep:slug"]
 epub = ["gen", "api", "dep:epub-builder", "dep:uuid"]
-api = ["types", "utils", "dep:serde_json", "dep:tokio", "dep:glob", "dep:log", "dep:rand"]
-gen = ["types", "utils", "dep:fontdb", "dep:resvg", "dep:textwrap", "dep:tiny-skia", "dep:usvg", "dep:ammonia", "dep:cssparser", "dep:html-escape", "dep:html5ever", "dep:lightningcss", "dep:lol_html", "dep:markup5ever", "dep:markup5ever_rcdom", "dep:xml5ever", "dep:log", "dep:rand"]
-types = ["dep:chrono", "dep:serde"]
-utils = ["dep:sha2", "dep:image", "dep:mime", "dep:reqwest"]
+api = ["dep:serde_json", "dep:tokio", "dep:glob", "dep:rpassword"]
+gen = ["dep:fontdb", "dep:resvg", "dep:textwrap", "dep:tiny-skia", "dep:usvg", "dep:ammonia", "dep:cssparser", "dep:html-escape", "dep:html5ever", "dep:lightningcss", "dep:lol_html", "dep:markup5ever", "dep:markup5ever_rcdom", "dep:xml5ever"]
 
 [dependencies]
-log = { version = "0.4", optional = true }
-rand = { version = "0.8", optional = true }
-
-chrono = { version = "0.4", features = ["serde"], optional = true }
-serde = { version = "1", features = ["derive"], optional = true }
-
-mime = { version = "0.3", optional = true }
-sha2 = { version = "0.10", optional = true }
-reqwest = { version = "0.12", features = ["json"], optional = true }
-image = { version = "0.25", default-features = false, features = ["bmp", "gif", "jpeg", "png", "webp"], optional = true }
+log = "0.4"
+rand = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+mime = "0.3"
+sha2 = "0.10"
+reqwest = { version = "0.12", features = ["json"] }
+image = { version = "0.25", default-features = false, features = ["bmp", "gif", "jpeg", "png", "webp"] }
 
 serde_json = { version ="1", optional = true }
 tokio = { version = "1", features = ["full"], optional = true }
 glob = { version = "0.3", optional = true }
+rpassword = { version = "7.3.1", optional = true }
 
 fontdb = { version = "0.16", optional = true }
 resvg = { version = "0.41", optional = true }
@@ -52,8 +48,6 @@ xml5ever = { version = "0.18", optional = true }
 
 epub-builder = { version = "0.7", default-features = false, features = ["libzip"], optional = true }
 uuid = { version = "1", features = ["v4"], optional = true }
-
-rpassword = { version = "7.3.1", optional = true }
 
 clap = { version = "4", features = ["derive"], optional = true }
 simple_logger = { version = "4", optional = true }
