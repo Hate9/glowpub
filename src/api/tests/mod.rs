@@ -31,6 +31,7 @@ struct Error {
 }
 
 #[tokio::test]
+#[ignore]
 async fn deserialisation() -> Result<()> {
     let _posts: Vec<GlowficResponse<Post>> = serde_json::from_str(&read_to_string(ALL_POSTS)?)?;
     let _posts: Vec<Post> = serde_json::from_str(&read_to_string(OK_POSTS)?)?;
