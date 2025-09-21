@@ -1,5 +1,4 @@
 use std::{
-    collections::BTreeSet,
     error::Error,
     path::{Path, PathBuf},
     str::FromStr,
@@ -17,6 +16,9 @@ use crate::{
         extension_to_image_mime, guess_image_mime, http_client, mime_to_image_extension, url_hash,
     },
 };
+
+#[cfg(feature = "gen")]
+use std::collections::BTreeSet;
 
 const CACHE_ROOT: &str = "./cache";
 

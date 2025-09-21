@@ -104,15 +104,15 @@ pub struct Reply {
 }
 
 mod helpers {
-    use std::{
-        collections::{BTreeSet, HashSet},
-        iter,
-    };
-
-    #[cfg(feature = "gen")]
-    use crate::generate::transform;
+    use std::collections::BTreeSet;
 
     use super::*;
+
+    #[cfg(feature = "gen")]
+    use {
+        crate::generate::transform,
+        std::{collections::HashSet, iter},
+    };
 
     // TODO: can we rely on there always being at least one thread?
     impl Continuity {

@@ -1,4 +1,4 @@
-mod cover;
+pub mod cover;
 
 #[cfg(feature = "epub")]
 pub mod epub;
