@@ -75,6 +75,10 @@ struct CliOptions {
     #[clap(long)]
     jpeg: bool,
 
+    /// Uses a very simple detection-method to check for posts and replies written in Markdown.
+    #[clap(long)]
+    simple_markdown_detection: bool,
+
     /// When inlining icons into the epub file, this will scale all icon images above the provided width down to that width.
     /// Defaults to "100" if no value is provided.
     /// (Does not affect SVGs or non-icon images.)
@@ -168,6 +172,7 @@ async fn main() {
         text_to_speech,
         flatten_details,
         jpeg,
+        simple_markdown_detection,
         resize_icons,
         output_dir,
         output_dir_layout,
@@ -196,6 +201,7 @@ async fn main() {
         },
         jpeg,
         resize_icons,
+        simple_markdown_detection,
     };
     let html_options = Options {
         text_to_speech,
@@ -205,6 +211,7 @@ async fn main() {
         },
         jpeg,
         resize_icons,
+        simple_markdown_detection,
     };
 
     match command {
