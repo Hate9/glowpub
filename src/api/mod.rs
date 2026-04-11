@@ -150,7 +150,7 @@ pub(crate) async fn get_glowfic<T>(
 where
     T: DeserializeOwned,
 {
-    let parsed: GlowficResponse<T> = retry(RETRIES, || async {
+    let mut parsed: GlowficResponse<T> = retry(RETRIES, || async {
         http_client()
             .get(url)
             .any_map(|request| match Token::try_global() {
@@ -159,7 +159,6 @@ where
             })
             .send()
             .await?
-            .error_for_status()?
             .json()
             .await
     })
@@ -167,7 +166,7 @@ where
 
     if parsed.is_permission_error() && Token::try_global().is_none() {
         if let Ok(Ok(Ok(Token { token }))) = Token::global_or_prompt().await {
-            let parsed: GlowficResponse<T> = retry(RETRIES, || async {
+            parsed = retry(RETRIES, || async {
                 http_client()
                     .get(url)
                     .bearer_auth(&token)
@@ -178,14 +177,9 @@ where
                     .await
             })
             .await?;
-
-            Ok(parsed.into_result())
-        } else {
-            Ok(parsed.into_result())
         }
-    } else {
-        Ok(parsed.into_result())
     }
+    Ok(parsed.into_result())
 }
 impl<T> GlowficResponse<T> {
     fn into_result(self) -> Result<T, Vec<GlowficError>> {
