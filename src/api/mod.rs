@@ -150,35 +150,31 @@ pub(crate) async fn get_glowfic<T>(
 where
     T: DeserializeOwned,
 {
-    let mut parsed: GlowficResponse<T> = retry(RETRIES, || async {
-        http_client()
+    let parsed: GlowficResponse<T> = retry(RETRIES, || async {
+        let mut response = http_client()
             .get(url)
             .any_map(|request| match Token::try_global() {
                 Some(token) => request.bearer_auth(token.token),
                 None => request,
             })
             .send()
-            .await?
-            .json()
-            .await
+            .await?;
+
+        if response.status() == reqwest::StatusCode::FORBIDDEN
+            && Token::try_global().is_none()
+            && let Ok(Ok(Ok(token))) = Token::global_or_prompt().await
+        {
+            response = http_client()
+                .get(url)
+                .bearer_auth(token.token)
+                .send()
+                .await?
+        }
+
+        response.error_for_status()?.json().await
     })
     .await?;
 
-    if parsed.is_permission_error() && Token::try_global().is_none() {
-        if let Ok(Ok(Ok(Token { token }))) = Token::global_or_prompt().await {
-            parsed = retry(RETRIES, || async {
-                http_client()
-                    .get(url)
-                    .bearer_auth(&token)
-                    .send()
-                    .await?
-                    .error_for_status()?
-                    .json()
-                    .await
-            })
-            .await?;
-        }
-    }
     Ok(parsed.into_result())
 }
 impl<T> GlowficResponse<T> {
@@ -190,14 +186,6 @@ impl<T> GlowficResponse<T> {
     }
 }
 
-impl<T> GlowficResponse<T> {
-    fn is_permission_error(&self) -> bool {
-        let Self::Error { errors } = self else {
-            return false;
-        };
-        errors.iter().any(|e| e.is_permission_error())
-    }
-}
 impl GlowficError {
     pub fn is_permission_error(&self) -> bool {
         self.message == "You do not have permission to perform this action."
